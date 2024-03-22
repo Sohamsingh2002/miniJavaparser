@@ -1,0 +1,99 @@
+
+Start ::= Program
+
+// Program
+Program ::= MainClassDecl
+
+
+// Main Class Declaration
+MainClassDecl ::= PUBLIC CLASS ID LBRACE PUBLIC STATIC VOID MAIN LPAREN STRING LBRACK RBRACK ID RPAREN LBRACE MultiStatement RBRACE RBRACE
+
+
+// Statements
+MultiStatement ::= SingleStatment MultiStatement | Empty
+
+SingleStatement ::=  Block
+            | VarDecl SEMI
+            | AssignExpr SEMI
+            | MethodCall SEMI
+            | BranchStatement
+            | WhileLoop
+            | ForLoop
+            | MethodCall SEMI
+            | RETURN Expr SEMI
+
+
+
+BranchStatement ::= IF LPAREN Condition RPAREN Block RemBranch 
+RemBranch ::= ELSE Block | Empty
+
+WhileLoop ::= WHILE LPAREN Condition RPAREN Block
+ForLoop ::= FOR LPAREN ForInit SEMI Condition SEMI ForUpdate RPAREN Block
+Block ::= LBRACE MultiStatement RBRACE
+
+
+// Variable Declaration
+VarDecl ::= Type ID RemVarDecl
+RemVarDecl ::= Empty | EQU Factor
+
+// Type
+Type ::= INT
+       | BOOLEAN
+       | STRINGTYPE
+       | CLASS ID
+
+
+Factor ::= NUM
+        | TRUE
+        | FALSE
+        | STRING
+        | Expr
+        | THIS Did
+        | NULL
+        | ObjConstruct
+        | NOT Factor
+
+Entity :: = NUM
+        | TRUE
+        | FALSE
+        | STRING
+        | ID
+
+ObjConstruct := NEW RemObj 
+RemObj := ID LPAREN  RPAREN | Type LPAREN  RPAREN
+
+
+
+Name ::= ID Did 
+Did := DOT ID Did | Empty
+
+
+// Operator 
+
+BinOp ::= PLUS |MINUS | MULTIPLY | DIVIDE |MOD| AND | OR
+FrOp :: PLUS | MINUS | NOT 
+BkOp :: INC | DEC
+
+// Expressions
+Expr =  Entity  | LPAREN Expr RPAREN | Expr Binop Expr | 
+RemExpr = BinOp Expr | Empty (no need)
+BkExpr = ID Bkop
+
+// Condition
+Condition ::= Expr CompOp Expr;
+CompOp ::= EQ | NEQ | LT | LEQ | GT | GEQ
+
+// AssignExpr
+AssignExpr ::= ID ASSIGN Factor
+
+// For Initialization
+ForInit ::= VarDecl | AssignExpr
+
+// For Update
+ForUpdate ::= BkExpr 
+
+// Method Call
+MethodCall ::= Name LPAREN Args RPAREN
+
+// Arguments
+Args ::= Expr | Empty
