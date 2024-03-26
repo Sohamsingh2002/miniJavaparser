@@ -174,6 +174,14 @@ public:
             {
                 singleStatementNode->children.push_back(MethodCall1());
             }
+            else if(tp.type == ID){
+                singleStatementNode->children.push_back(VarDecl1());
+            }
+            else if(tp.type == INC||tp.type==DEC){
+                
+                singleStatementNode->children.push_back(BkExpr1());
+            }
+            // cout<<tp.type<<endl;
             addNextToken(SEMI, singleStatementNode);
             // consume(SEMI);
             break;
@@ -226,7 +234,7 @@ public:
             remVarDeclNode->children.push_back(Factor1());
             return remVarDeclNode;
         }
-        else
+        else 
         {
             return new TreeNode(RemVarDecl, "Empty");
         }
@@ -349,8 +357,7 @@ public:
         case STRINGTYPE:
             addNextToken(STRINGTYPE, typeNode);
             break;
-        case CLASS:
-            addNextToken(CLASS, typeNode);
+        case ID:
             addNextToken(ID, typeNode);
             break;
         default:
@@ -414,6 +421,7 @@ public:
     {
         // RemObj := ID LPAREN Expr RPAREN | Type LPAREN Expr RPAREN
         TreeNode *remObjNode = new TreeNode(RemObj, "RemObj");
+        // cout<<"here"<<endl;
         if (currentToken.type == ID)
         {
             addNextToken(ID, remObjNode);
@@ -430,7 +438,7 @@ public:
             exit(1);
         }
         addNextToken(LPAREN, remObjNode);
-        // consume(LPAREN);
+        
         addNextToken(RPAREN, remObjNode);
         // consume(RPAREN);
         return remObjNode;
@@ -826,13 +834,27 @@ void writeParseTreeToDot(TreeNode *root, const string &fileName)
     dotFile.close();
 }
 
-void printToken(vector<Token> &TokenList)
+void printToken(vector<Token> &TokenList,string tokenFile )
 {
-    for (int i = 0; i < TokenList.size(); i++)
-    {
-        // printf("%s -- %s -- %d \n",TokenList[i].lexeme,TokenList[i].type,TokenList[i].lineNo);
-        cout << TokenList[i].lexeme << "--" << TokenTypeStrings[TokenList[i].type] << "--" << TokenList[i].lineNo << endl;
+
+    string filename=tokenFile;
+    ofstream outputFile(filename);
+    if (!outputFile.is_open()) {
+        cerr << "Error: Unable to open file " << filename << " for writing." << endl;
+        return;
     }
+
+    for (const Token& item : TokenList) {
+        outputFile << item.lexeme <<","<<TokenTypeStrings[item.type]<<","<<item.lineNo<< endl;
+    }
+
+    outputFile.close();
+    cout << "Data successfully written to " << filename << endl;
+    // for (int i = 0; i < TokenList.size(); i++)
+    // {
+    //     // printf("%s -- %s -- %d \n",TokenList[i].lexeme,TokenList[i].type,TokenList[i].lineNo);
+    //     cout << TokenList[i].lexeme << "--" << TokenTypeStrings[TokenList[i].type] << "--" << TokenList[i].lineNo << endl;
+    // }
 }
 
 void exitHandler()
@@ -843,13 +865,18 @@ void exitHandler()
     // Perform any cleanup operations here
 }
 
+
 int main()
 {
 
     // atexit(exitHandler);
 
-    string treeFile = "tree.dot";
-    string filename = "input.java";
+    string treeFile,filename,tokenFileName;
+    cout<<"Enter input file name : ";
+    cin>>filename;
+    treeFile="tree.dot";
+    tokenFileName="token.txt";
+
 
     Parser parser;
     pair<vector<Token>, bool> Tk;
@@ -862,7 +889,8 @@ int main()
         return 0;
     }
     parser.TokenList = Tk.first;
-    printToken(parser.TokenList);
+
+    printToken(parser.TokenList,tokenFileName);
 
     parser.setToken();
     cout << "Phase 2 - Parsing (Started)" << endl;

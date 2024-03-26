@@ -55,7 +55,7 @@ private:
 
     void consumeWhiteSpace() {
         while (isspace(currentChar)) {
-            if (currentChar == '\n') currentLine++;
+            // if (currentChar == '\n') currentLine++;
             currentChar = getNextChar();
         }
     }

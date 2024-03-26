@@ -1,3 +1,4 @@
+# Grammar Rule 
 
 Start ::= Program
 
@@ -21,6 +22,7 @@ SingleStatement ::=  Block
             | ForLoop
             | MethodCall SEMI
             | RETURN Expr SEMI
+            | BkExpr SEMI
 
 
 
@@ -40,7 +42,7 @@ RemVarDecl ::= Empty | EQU Factor
 Type ::= INT
        | BOOLEAN
        | STRINGTYPE
-       | CLASS ID
+       | ID
 
 
 Factor ::= NUM
